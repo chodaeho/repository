@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<!-- <property name="LOG_PATH_NAME" value="/Users/cho/eclipse-workspace/homework/src/main/webapp/logs/" /> -->
+	
 	<property name="LOG_PATH_NAME" value="/Users/cho/git/repository/homework/src/main/webapp/logs/" />
 	
 
