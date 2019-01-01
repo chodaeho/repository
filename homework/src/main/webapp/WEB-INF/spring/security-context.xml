@@ -7,23 +7,42 @@
         http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
-	<!-- <use-expressions> 속성은 <intercept-url>의 access 속성에 표현식을 사용할 수 있다는 뜻입니다. 
-	이 값이 "false"이면 access="USER" 로 값을 바로 사용해야 합니다. -->
+	<!-- use-expressions 속성은 <intercept-url>의 access 속성에 표현식을 사용할 수 있다는 뜻입니다. 
+			이 값이 "false"이면 access="USER" 로 값을 바로 사용해야 합니다. -->
 	<http auto-config="true" use-expressions="true" >
 	
 		<!-- <intercept-url>요소는 pattern 속성으로 주어인 URL 에 대해 access속성의 권한을 요구합니다. 
-			위의 의미는 모든 URL(/**)을 보호하고, 액세스하기 위해서는 ROLE_USER 역할을 요구합니다. 
-			접두어 "ROLE_" 가 없어도 동일한 의미 입니다.(접두어를 붙여도 됩니다.) -->
-		<intercept-url pattern="/**" access="hasRole('USER')" />
+				위의 의미는 모든 URL(/**)을 보호하고, 액세스하기 위해서는 ROLE_USER 역할을 요구합니다. 
+				접두어 "ROLE_" 가 없어도 동일한 의미 입니다.(접두어를 붙여도 됩니다.) -->
+				
+		<!-- 대표적인 access 권한 종류
+				-permitAll : 모든 접속자 접근 가능.
+				-hasRole('ADMIN') : ADMIN권한 유저만 접속 할 수 있음. 권한 명 앞에 "ROLE_" 안붙어 있을시엔 자동으로 붙.
+				-hasAnyRole('USER, ADMIN') : 주어진 권한중에 한가지 이상 있을시 접속 허용. 권한 명 앞에 "ROLE_" 안붙어 있을시엔 자동으로 붙. -->
+		<intercept-url pattern="/login/loginForm" access="permitAll"/>
+		<intercept-url pattern="/home" access="permitAll"/>
+		<intercept-url pattern="/admin/**" access="hasRole('ADMIN')"/>
+		<intercept-url pattern="/**" access="hasAnyRole('USER, ADMIN')"/>
 	
 		<!-- <form-login> 요소는 로그인을 위해서 폼을 사용합니다. 로그인처리 URL의 기본값은 "/login" 입니다. -->
-		<form-login />
+		<form-login login-page="/login/loginForm"
+					default-target-url="/home"
+					authentication-failure-url="/login/loginForm?error"
+					username-parameter="id"
+					password-parameter="password"
+		/>
+		<logout	logout-url="/logout"
+				logout-success-url="/home"
+		/>
+		<access-denied-handler	error-page="/login/accessDenied"
+		/>
+		
 
 		<!-- <logout> 요소는 로그아웃 URL을 제공한다는 뜻입니다. 기본값은 "/logout" 입니다. -->
 		<logout />
 		<!-- <csrf disabled="false"/> 는 CSRF(Cross Site Resquest Fosery) 공격을 방어하기 위한 처리를 하겠다는 뜻입니다. 이게 기본값입니다. 
-			CSRF 방어를 위해 POST 방식으로 값을 넘기는 곳에는 모두 <input name="_csrf" type="hidden" value="ae10ba14-8ca9-4171-9f0d-dd472321a08d" /> 
-			와 같은 숨겨진 값을 보내게 됩니다. -->
+				CSRF 방어를 위해 POST 방식으로 값을 넘기는 곳에는 모두 <input name="_csrf" type="hidden" value="ae10ba14-8ca9-4171-9f0d-dd472321a08d" /> 
+				와 같은 숨겨진 값을 보내게 됩니다. -->
 		<csrf disabled="false"/> 
 
 	</http>
@@ -33,8 +52,10 @@
 		<authentication-provider>
 			<user-service>
 				<user name="user" password="password" authorities="ROLE_USER" />
+                <user name="admin" password="password" authorities="ROLE_ADMIN" />
 			</user-service>
 		</authentication-provider>
 	</authentication-manager>
+	
 
 </beans:beans>
